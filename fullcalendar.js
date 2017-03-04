@@ -151,7 +151,7 @@ $.fn.fullCalendar = function(options) {
 	this.each(function(i, _element) {
 		var element = $(_element);
 		var calendar = new Calendar(element, options, eventSources);
-		element.data('fullCalendar', calendar); 
+		element.data('fullCalendar', calendar); // TODO: look into memory leak implications
 		calendar.render();
 	});
 	
@@ -218,7 +218,8 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* Main Rendering*/
+	/* Main Rendering
+	-----------------------------------------------------------------------------*/
 	
 	
 	setYMD(date, options.year, options.month, options.date);
@@ -264,14 +265,17 @@ function Calendar(element, options, eventSources) {
 			$(window).resize(windowResize);
 		}
 
+		// needed for IE in a 0x0 iframe, b/c when it is resized, never triggers a windowResize
 		if (!bodyVisible()) {
 			lateRender();
 		}
 	}
 	
 	
+	// called when we know the calendar couldn't be rendered when it was initialized,
+	// but we think it's ready now
 	function lateRender() {
-		setTimeout(function() { 
+		setTimeout(function() { // IE7 needs this so dimensions are calculated correctly
 			if (!currentView.start && bodyVisible()) { // !currentView.start makes sure this never happens more than once
 				renderView();
 			}
@@ -305,7 +309,8 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* View Rendering*/
+	/* View Rendering
+	-----------------------------------------------------------------------------*/
 	
 
 	function changeView(newViewName) {
@@ -344,8 +349,8 @@ function Calendar(element, options, eventSources) {
 
 	function renderView(inc) {
 		if (
-			!currentView.start || 
-			inc || date < currentView.start || date >= currentView.end 
+			!currentView.start || // never rendered before
+			inc || date < currentView.start || date >= currentView.end // or new date range
 		) {
 			if (elementVisible()) {
 				_renderView(inc);
@@ -354,17 +359,17 @@ function Calendar(element, options, eventSources) {
 	}
 
 
-	function _renderView(inc) { 
+	function _renderView(inc) { // assumes elementVisible
 		ignoreWindowResize++;
 
-		if (currentView.start) { 
+		if (currentView.start) { // already been rendered?
 			trigger('viewDestroy', currentView, currentView, currentView.element);
 			unselect();
 			clearEvents();
 		}
 
 		freezeContentHeight();
-		currentView.render(date, inc || 0); 
+		currentView.render(date, inc || 0); // the view's render method ONLY renders the skeleton, nothing else
 		setSize();
 		unfreezeContentHeight();
 		(currentView.afterRender || noop)();
@@ -373,7 +378,7 @@ function Calendar(element, options, eventSources) {
 		updateTodayButton();
 
 		trigger('viewRender', currentView, currentView, currentView.element);
-		currentView.trigger('viewDisplay', _element); 
+		currentView.trigger('viewDisplay', _element); // deprecated
 
 		ignoreWindowResize--;
 
@@ -382,7 +387,8 @@ function Calendar(element, options, eventSources) {
 	
 	
 
-	/* Resizing*/
+	/* Resizing
+	-----------------------------------------------------------------------------*/
 	
 	
 	function updateSize() {
@@ -396,7 +402,7 @@ function Calendar(element, options, eventSources) {
 	}
 	
 	
-	function calcSize() { 
+	function calcSize() { // assumes elementVisible
 		if (options.contentHeight) {
 			suggestedViewHeight = options.contentHeight;
 		}
@@ -409,10 +415,12 @@ function Calendar(element, options, eventSources) {
 	}
 	
 	
-	function setSize() { 
+	function setSize() { // assumes elementVisible
 
 		if (suggestedViewHeight === undefined) {
-			calcSize(); 
+			calcSize(); // for first time
+				// NOTE: we don't want to recalculate on every renderView because
+				// it could result in oscillating heights due to scrollbars.
 		}
 
 		ignoreWindowResize++;
@@ -426,12 +434,12 @@ function Calendar(element, options, eventSources) {
 	
 	function windowResize() {
 		if (!ignoreWindowResize) {
-			if (currentView.start) { 
+			if (currentView.start) { // view has already been rendered
 				var uid = ++resizeUID;
-				setTimeout(function() { 
+				setTimeout(function() { // add a delay
 					if (uid == resizeUID && !ignoreWindowResize && elementVisible()) {
 						if (elementOuterWidth != (elementOuterWidth = element.outerWidth())) {
-							ignoreWindowResize++; 
+							ignoreWindowResize++; // in case the windowResize callback changes the height
 							updateSize();
 							currentView.trigger('windowResize', _element);
 							ignoreWindowResize--;
@@ -439,6 +447,7 @@ function Calendar(element, options, eventSources) {
 					}
 				}, 200);
 			}else{
+				// calendar must have been initialized in a 0x0 iframe that has just been resized
 				lateRender();
 			}
 		}
@@ -446,34 +455,36 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* Event Fetching/Rendering*/
-	
+	/* Event Fetching/Rendering
+	-----------------------------------------------------------------------------*/
+	// TODO: going forward, most of this stuff should be directly handled by the view
 
-	function refetchEvents() { 
+
+	function refetchEvents() { // can be called as an API method
 		clearEvents();
 		fetchAndRenderEvents();
 	}
 
 
-	function rerenderEvents(modifiedEventID) { 
+	function rerenderEvents(modifiedEventID) { // can be called as an API method
 		clearEvents();
 		renderEvents(modifiedEventID);
 	}
 
 
-	function renderEvents(modifiedEventID) { 
+	function renderEvents(modifiedEventID) { // TODO: remove modifiedEventID hack
 		if (elementVisible()) {
-			currentView.setEventData(events); 
-			currentView.renderEvents(events, modifiedEventID); 
+			currentView.setEventData(events); // for View.js, TODO: unify with renderEvents
+			currentView.renderEvents(events, modifiedEventID); // actually render the DOM elements
 			currentView.trigger('eventAfterAllRender');
 		}
 	}
 
 
 	function clearEvents() {
-		currentView.triggerEventDestroy();
-		currentView.clearEvents(); 
-		currentView.clearEventData();
+		currentView.triggerEventDestroy(); // trigger 'eventDestroy' for each event
+		currentView.clearEvents(); // actually remove the DOM elements
+		currentView.clearEventData(); // for View.js, TODO: unify with clearEvents
 	}
 	
 
@@ -489,7 +500,8 @@ function Calendar(element, options, eventSources) {
 
 	function fetchAndRenderEvents() {
 		fetchEvents(currentView.visStart, currentView.visEnd);
-			
+			// ... will call reportEvents
+			// ... which will call renderEvents
 	}
 
 	
@@ -507,7 +519,8 @@ function Calendar(element, options, eventSources) {
 
 
 
-	/* Header Updating*/
+	/* Header Updating
+	-----------------------------------------------------------------------------*/
 
 
 	function updateTitle() {
@@ -527,7 +540,8 @@ function Calendar(element, options, eventSources) {
 	
 
 
-	/* Selection*/
+	/* Selection
+	-----------------------------------------------------------------------------*/
 	
 
 	function select(start, end, allDay) {
@@ -535,7 +549,7 @@ function Calendar(element, options, eventSources) {
 	}
 	
 
-	function unselect() { 
+	function unselect() { // safe to be called before renderView
 		if (currentView) {
 			currentView.unselect();
 		}
@@ -543,7 +557,8 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* Date*/
+	/* Date
+	-----------------------------------------------------------------------------*/
 	
 	
 	function prev() {
@@ -576,7 +591,7 @@ function Calendar(element, options, eventSources) {
 	
 	function gotoDate(year, month, dateOfMonth) {
 		if (year instanceof Date) {
-			date = cloneDate(year); 
+			date = cloneDate(year); // provided 1 argument, a Date
 		}else{
 			setYMD(date, year, month, dateOfMonth);
 		}
@@ -604,7 +619,8 @@ function Calendar(element, options, eventSources) {
 
 
 
-	/* Height "Freezing"*/
+	/* Height "Freezing"
+	-----------------------------------------------------------------------------*/
 
 
 	function freezeContentHeight() {
@@ -626,7 +642,8 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* Misc*/
+	/* Misc
+	-----------------------------------------------------------------------------*/
 	
 	
 	function getView() {
@@ -656,14 +673,15 @@ function Calendar(element, options, eventSources) {
 	
 	
 	
-	/* External Dragging*/
+	/* External Dragging
+	------------------------------------------------------------------------*/
 	
 	if (options.droppable) {
 		$(document)
 			.bind('dragstart', function(ev, ui) {
 				var _e = ev.target;
 				var e = $(_e);
-				if (!e.parents('.fc').length) { 
+				if (!e.parents('.fc').length) { // not already inside a calendar
 					var accept = options.dropAccept;
 					if ($.isFunction(accept) ? accept.call(_e, e) : e.is(accept)) {
 						_dragElement = _e;
@@ -744,7 +762,8 @@ function Header(calendar, options) {
 					}else{
 						var buttonClick;
 						if (calendar[buttonName]) {
-							buttonClick = calendar[buttonName]; 
+							buttonClick = calendar[buttonName]; // calendar method
+						}
 						else if (fcViews[buttonName]) {
 							buttonClick = function() {
 								button.removeClass(tm + '-state-hover'); // forget why
@@ -752,8 +771,8 @@ function Header(calendar, options) {
 							};
 						}
 						if (buttonClick) {
-							var icon = options.theme ? smartProperty(options.buttonIcons, buttonName) : null; 
-							var text = smartProperty(options.buttonText, buttonName); 
+							var icon = options.theme ? smartProperty(options.buttonIcons, buttonName) : null; // why are we using smartProperty here?
+							var text = smartProperty(options.buttonText, buttonName); // why are we using smartProperty here?
 							var button = $(
 								"<span class='fc-button fc-button-" + buttonName + " " + tm + "-state-default'>" +
 									(icon ?
@@ -925,6 +944,8 @@ function EventManager(options, _sources) {
 					if (source.eventDataTransform) {
 						events = $.map(events, source.eventDataTransform);
 					}
+					// TODO: this technique is not ideal for static array event sources.
+					//  For arrays, we'll want to process all events right in the beginning, then never again.
 				
 					for (var i=0; i<events.length; i++) {
 						events[i].source = source;
@@ -948,9 +969,11 @@ function EventManager(options, _sources) {
 		for (i=0; i<fetchers.length; i++) {
 			res = fetchers[i](source, rangeStart, rangeEnd, callback);
 			if (res === true) {
+				// the fetcher is in charge. made its own async request
 				return;
 			}
 			else if (typeof res == 'object') {
+				// the fetcher returned a new source. process it
 				_fetchEventSource(res, callback);
 				return;
 			}
@@ -988,6 +1011,8 @@ function EventManager(options, _sources) {
 					customData = source.data;
 				}
 
+				// use a copy of the custom data so we can modify the parameters
+				// and not affect the passed-in object.
 				var data = $.extend({}, customData || {});
 
 				var startParam = firstDefined(source.startParam, options.startParam);
@@ -1027,14 +1052,15 @@ function EventManager(options, _sources) {
 	
 	
 	
-	/* Sources*/
+	/* Sources
+	-----------------------------------------------------------------------------*/
 	
 
 	function addEventSource(source) {
 		source = _addEventSource(source);
 		if (source) {
 			pendingSourceCnt++;
-			fetchEventSource(source, currentFetchID); 
+			fetchEventSource(source, currentFetchID); // will eventually call reportEvents
 		}
 	}
 	
@@ -1058,6 +1084,7 @@ function EventManager(options, _sources) {
 		sources = $.grep(sources, function(src) {
 			return !isSourcesEqual(src, source);
 		});
+		// remove all client events from that source
 		cache = $.grep(cache, function(e) {
 			return !isSourcesEqual(e.source, source);
 		});
@@ -1066,16 +1093,17 @@ function EventManager(options, _sources) {
 	
 	
 	
-	/* Manipulation*/
+	/* Manipulation
+	-----------------------------------------------------------------------------*/
 	
 	
-	function updateEvent(event) { 
+	function updateEvent(event) { // update an existing event
 		var i, len = cache.length, e,
-			defaultEventEnd = getView().defaultEventEnd, 
+			defaultEventEnd = getView().defaultEventEnd, // getView???
 			startDelta = event.start - event._start,
 			endDelta = event.end ?
-				(event.end - (event._end || defaultEventEnd(event))) 
-				: 0;                                                     
+				(event.end - (event._end || defaultEventEnd(event))) // event._end would be null if event.end
+				: 0;                                                      // was null and event was just resized
 		for (i=0; i<len; i++) {
 			e = cache[i];
 			if (e._id == event._id && e != event) {
@@ -1120,21 +1148,23 @@ function EventManager(options, _sources) {
 	
 	
 	function removeEvents(filter) {
-		if (!filter) {
+		if (!filter) { // remove all
 			cache = [];
+			// clear all array sources
 			for (var i=0; i<sources.length; i++) {
 				if ($.isArray(sources[i].events)) {
 					sources[i].events = [];
 				}
 			}
 		}else{
-			if (!$.isFunction(filter)) { 
+			if (!$.isFunction(filter)) { // an event ID
 				var id = filter + '';
 				filter = function(e) {
 					return e._id == id;
 				};
 			}
 			cache = $.grep(cache, filter, true);
+			// remove events from array sources
 			for (var i=0; i<sources.length; i++) {
 				if ($.isArray(sources[i].events)) {
 					sources[i].events = $.grep(sources[i].events, filter, true);
@@ -1149,18 +1179,19 @@ function EventManager(options, _sources) {
 		if ($.isFunction(filter)) {
 			return $.grep(cache, filter);
 		}
-		else if (filter) { 
+		else if (filter) { // an event ID
 			filter += '';
 			return $.grep(cache, function(e) {
 				return e._id == filter;
 			});
 		}
-		return cache; 
+		return cache; // else, return all
 	}
 	
 	
 	
-	/* Loading State*/
+	/* Loading State
+	-----------------------------------------------------------------------------*/
 	
 	
 	function pushLoading() {
@@ -1178,7 +1209,8 @@ function EventManager(options, _sources) {
 	
 	
 	
-	/* Event Normalization*/
+	/* Event Normalization
+	-----------------------------------------------------------------------------*/
 	
 	
 	function normalizeEvent(event) {
@@ -1207,16 +1239,18 @@ function EventManager(options, _sources) {
 		}else{
 			event.className = [];
 		}
+		// TODO: if there is no start date, return false to indicate an invalid event
 	}
 	
 	
 	
-	/* Utils*/
+	/* Utils
+	------------------------------------------------------------------------------*/
 	
 	
 	function normalizeSource(source) {
 		if (source.className) {
-		
+			// TODO: repeat code, same code for event classNames
 			if (typeof source.className == 'string') {
 				source.className = source.className.split(/\s+/);
 			}
