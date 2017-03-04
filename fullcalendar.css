@@ -21,10 +21,7 @@ html .fc,
 	vertical-align: top;
 	}
 
-
-
-/* Header
-------------------------------------------------------------------------*/
+/* Header*/
 
 .fc-header td {
 	white-space: nowrap;
@@ -68,7 +65,7 @@ html .fc,
 	vertical-align: top;
 	}
 	
-/* buttons edges butting together */
+/* buttons edges butt together :(*/
 
 .fc-header .fc-button {
 	margin-right: -1px;
@@ -97,8 +94,7 @@ html .fc,
 	
 	
 	
-/* Content
-------------------------------------------------------------------------*/
+/* Content*/
 	
 .fc-content {
 	clear: both;
@@ -112,17 +108,16 @@ html .fc,
 	
 	
 
-/* Cell Styles
-------------------------------------------------------------------------*/
+/* Cell Styles*/
 
     /* <th>, usually */
-.fc-widget-content {  /* <td>, usually */ /*#e5e5e5*/
+.fc-widget-content {  /* <td>, usually #e5e5e5*/
 	border: 1px solid #615785; 
 	}
 .fc-widget-header{
     border-bottom: 1px solid #EEE; 
 }	
-.fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
+.fc-state-highlight { /* <td> today cell */ /* TODO add .fc-today to <th> */
 	/* background: #fcf8e3; */
 }
 
@@ -136,13 +131,12 @@ html .fc,
 .fc-cell-overlay { /* semi-transparent rectangle while dragging */
 	background: #bce8f1;
 	opacity: .3;
-	filter: alpha(opacity=30); /* for IE */
+	filter: alpha(opacity=30); 
 	}
 	
 
 
-/* Buttons
-------------------------------------------------------------------------*/
+/* Buttons*/
 
 .fc-button {
 	position: relative;
@@ -177,7 +171,7 @@ default prev/next buttons use HTML entities like &lsaquo; &rsaquo; &laquo; &raqu
 	margin: 0 .4em;
 	font-size: 2em;
 	line-height: 23px;
-	vertical-align: baseline; /* for IE7 */
+	vertical-align: baseline; 
 	}
 
 .fc-button-prev .fc-text-arrow,
@@ -250,8 +244,7 @@ default prev/next buttons use HTML entities like &lsaquo; &rsaquo; &laquo; &raqu
 
 	
 
-/* Global Event Styles
-------------------------------------------------------------------------*/
+/* Global Event Styles*/
 
 .fc-event-container > * {
 	z-index: 8;
@@ -262,21 +255,23 @@ default prev/next buttons use HTML entities like &lsaquo; &rsaquo; &laquo; &raqu
 	z-index: 9;
 	}
 	 
+/*KEVIN you can change the colors on the calendar events here down below if you want*/
+
 .fc-event {
 	border: 1px solid #FFF; /* default BORDER color */
-	background-color: #7293da; /* default BACKGROUND color */
-	color: #0c0c0c;               /* default TEXT color #919191 */
+	background-color: #e6b5fc; /* default BACKGROUND color */
+	color: #0c0c0c;               /* default TEXT color */
 	font-size: 12px;
 	cursor: default;
 }
 .fc-event.meetup{
-    background-color: #f3dcf8;
+    background-color: #f4a6dd;
 }
 .fc-event.info{
     background-color: #c6ebfe;
 }
 .fc-event.important{
-    background-color: #f25cb8;
+    background-color: #e9fc92;
 }
 .fc-event.projectsite{
     background-color: #BEFFBF;
@@ -313,15 +308,14 @@ a.fc-event,
 	display: block;
 	position: absolute;
 	z-index: 99999;
-	overflow: hidden; /* hacky spaces (IE6/7) */
-	font-size: 300%;  /* */
-	line-height: 50%; /* */
+	overflow: hidden; 
+	font-size: 300%;  
+	line-height: 50%; 
 	}
 	
 	
 	
-/* Horizontal Events
-------------------------------------------------------------------------*/
+/* Horizontal Events*/
 
 .fc-event-hori {
 	border-width: 1px 0;
@@ -333,7 +327,7 @@ a.fc-event,
 	border-left-width: 1px;
 	/*
 border-top-left-radius: 3px;
-	border-bottom-left-radius: 3px;
+border-bottom-left-radius: 3px;
 */
 	}
 
@@ -342,14 +336,14 @@ border-top-left-radius: 3px;
 	border-right-width: 1px;
 	/*
 border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
+border-bottom-right-radius: 3px;
 */
 	}
 	
 /* resizable */
 	
 .fc-event-hori .ui-resizable-e {
-	top: 0           !important; /* importants override pre jquery ui 1.7 styles */
+	top: 0           !important; 
 	right: -3px      !important;
 	width: 7px       !important;
 	height: 100%     !important;
@@ -365,13 +359,12 @@ border-top-right-radius: 3px;
 	}
 	
 .fc-event-hori .ui-resizable-handle {
-	_padding-bottom: 14px; /* IE6 had 0 height */
+	_padding-bottom: 14px; 
 	}
 	
 	
 	
-/* Reusable Separate-border Table
-------------------------------------------------------------*/
+/* Reusable Separate-border Table*/
 
 table.fc-border-separate {
 	border-collapse: separate;
@@ -411,8 +404,7 @@ table.fc-border-separate {
 	
 	
 
-/* Month View, Basic Week View, Basic Day View
-------------------------------------------------------------------------*/
+/* Month View, Basic Week View, Basic Day View*/
 
 .fc-grid th {
 	text-align: center;
@@ -434,7 +426,7 @@ table.fc-border-separate {
 	
 .fc-grid .fc-other-month .fc-day-number {
 	opacity: 0.3;
-	filter: alpha(opacity=30); /* for IE */
+	filter: alpha(opacity=30);
 
 	}
 	
@@ -461,8 +453,7 @@ table.fc-border-separate {
 	
 	
 
-/* Agenda Week View, Agenda Day View
-------------------------------------------------------------------------*/
+/* Agenda Week View, Agenda Day View*/
 
 .fc-agenda table {
 	border-collapse: separate;
@@ -547,8 +538,7 @@ table.fc-border-separate {
 	
 
 
-/* Vertical Events
-------------------------------------------------------------------------*/
+/* Vertical Events*/
 
 .fc-event-vert {
 	border-width: 0 1px;
@@ -596,7 +586,7 @@ table.fc-border-separate {
 /* resizable */
 	
 .fc-event-vert .ui-resizable-s {
-	bottom: 0        !important; /* importants override pre jquery ui 1.7 styles */
+	bottom: 0        !important; 
 	width: 100%      !important;
 	height: 8px      !important;
 	overflow: hidden !important;
@@ -647,4 +637,13 @@ table.fc-header{
     padding-right: 10px;
 }
 
-/*Source : Docs & License: http://arshaw.com/fullcalendar/*/
+/*Coding Resources Used:
+https://fullcalendar.io/
+http://stackoverflow.com/questions/2524971/adding-a-click-event-to-fullcalendar
+https://www.w3schools.com/howto/howto_css_modals.asp
+ Docs & License: http://arshaw.com/fullcalendar/
+ http://stackoverflow.com/questions/15010218/how-to-use-fullcalendar-with-addeventsource
+ https://github.com/carlsednaoui/add-to-calendar-buttons
+
+ //For Future Resources: 
+ http://stackoverflow.com/questions/15873910/how-to-show-fetch-events-from-database-with-time-in-fullcalendar; */

@@ -16,12 +16,6 @@
 		var m = date.getMonth();
 		var y = date.getFullYear();
 		
-		/*  KEVIN use these className colors in the CSS file to change colors
-		
-		className: default(lighter purple), important(red), meetup(pink), projectsite(green), info(blue)
-		
-		*/		
-		
 		  
 		/* initialize external events*/
 	
@@ -115,51 +109,99 @@
 			
 			events: [
 				{
-					title: 'Zoom Meeting',
-					start: new Date(y, m, 1),
+					title: 'Call Gilfoyle',
+					start: new Date(y, m, d+4, 8),
 					allDay: false,
 					className: 'default'
 				},
 				{
-					id: 999,
-					title: 'CCH Team Meeting', //Repeating Event//
-					start: new Date(y, m, d-3, 16, 0),
+					title: 'Check Out Kevin Smith site',
+					start: new Date(y, m, d, 7),
+					end: new Date(y, m, d, 8),
 					allDay: false,
-					className: 'default' /*info*/
+					url: 'https://www.mrkevinsmithdesign.com',
+					className: 'projectsite'
+				},
+				{
+					title: 'Lunch with Kevin',
+					start: new Date(y, m, d, 12),
+					allDay: false,
+					end: new Date(y, m, d, 13),
+					className: 'default'
+				},
+				{
+					title: 'Whats Good Houston Podcast',
+					start: new Date(y, m, d, 19),
+					allDay: false,
+					url: 'https://www.wghpodcast.com',
+					className: 'projectsite'
+				},
+				{
+					title: 'Google Hangout with Dinesh',
+					start: new Date(y, m, d+6, 11),
+					allDay: false,
+					className: 'meetup'
 				},
 				{
 					id: 999,
-					title: 'CCH Team Meeting', //Repeating Event//
-					start: new Date(y, m, d+4, 16, 0),
+					title: 'Pied Piper Weekly Meeting', //Repeating Event//
+					start: new Date(y, m, d+2, 16, 0),
 					allDay: false,
 					className: 'info' /*info*/
 				},
 				{
-					title: 'Upload Code to Git',
-					start: new Date(y, m, d, 10, 30),
+					id: 999,
+					title: 'Pied Piper Weekly Meeting', //Repeating Event//
+					start: new Date(y, m, d+9, 16, 0),
+					allDay: false,
+					className: 'info' /*info*/
+				},
+				{
+					id: 999,
+					title: 'Pied Piper Weekly Meeting', //Repeating Event//
+					start: new Date(y, m, d+16, 16, 0),
+					allDay: false,
+					className: 'info' /*info*/
+				},
+				{
+					id: 999,
+					title: 'Pied Piper Weekly Meeting', //Repeating Event//
+					start: new Date(y, m, d+23, 16, 0),
+					allDay: false,
+					className: 'info' /*info*/
+				},
+				{
+					title: 'Conference Call Peter Gregory',
+					start: new Date(y, m, d+5, 10, 30),
+					allDay: false,
+					className: 'meetup' 
+				},
+				{
+					title: 'Send Code to Elrich',
+					start: new Date(y, m, d, 21),
 					allDay: false,
 					className: 'important' 
 				},
 				{
-					title: 'Women in Tech Luncheon',
-					start: new Date(y, m, d-2, 12, 0),
-					end: new Date(y, m, d-2, 14, 0),
+					title: 'TechCrunch Disrupt',
+					start: new Date(y, m, d+11, 9, 0),
+					end: new Date(y, m, d+11, 7, 0),
 					allDay: false,
 					className: 'meetup'
 				},
 				{
 					title: 'TECH CONNECT Event',
 					start: new Date(y, m, d+5, 19, 0),
-					end: new Date(y, m, d+5, 22, 30),
-					allDay: true,
+					end: new Date(y, m, d+5, 21, 30),
+					allDay: false,
+					className: 'default'
 				},
 				{
-					title: 'Click for Project Github',
-					start: new Date(y, m, 28),
-					end: new Date(y, m, 29),
-					url: 'https://github.com/mrkevinsmithdesign/hackcity',
-					className: 'default' /*projectsite*/
-				}
+					title: 'Discuss Software Solutions with Syed',
+					start: new Date(y, m, d+12, 10),
+					allDay: false,
+					className: 'default'
+				},
 			],			
 		});
 		
@@ -235,3 +277,11 @@
 </div>
 </body>
 </html>
+
+<!--Coding Resources Used:
+https://fullcalendar.io/
+http://stackoverflow.com/questions/2524971/adding-a-click-event-to-fullcalendar
+https://www.w3schools.com/howto/howto_css_modals.asp
+ Docs & License: http://arshaw.com/fullcalendar/
+ http://stackoverflow.com/questions/15010218/how-to-use-fullcalendar-with-addeventsource
+ https://github.com/carlsednaoui/add-to-calendar-buttons-->
